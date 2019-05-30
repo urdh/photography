@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="x-ua-compatible" content="ie=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>$title$</title>
+    <link rel="stylesheet" href="/general.css" />
+  </head>
+  <body>
+    $-snippet("templates/sidebar.html")$
+    <main>
+      $body$
+    </main>
+    <script src="https://code.jquery.com/jquery-3.4.1.min.js"
+            integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo="
+            crossorigin="anonymous">
+    </script>
+    <script type="text/javascript">
+      $$(function () {
+        // Magnifying a photo.
+        $$('.photo picture>img').click(function() {
+          $$('.magnified').not($$(this)).removeClass('magnified');
+          $$(this).toggleClass('magnified');
+          if ($$(this).hasClass('magnified'))
+          {
+            $$('.sidebar').addClass('hidden');
+            $$([document.documentElement, document.body]).animate({
+                scrollLeft: ($$(this).offset().left - 300)
+            }, 300);
+          }
+          else
+          {
+            $$('.sidebar').removeClass('hidden');
+          }
+        });
+        // Scrolling horizontally.
+        $$('body').on('mousewheel DOMMouseScroll', function(event){
+          var delta = (event.originalEvent.wheelDelta || -event.originalEvent.detail);
+          $$(this).scrollLeft($$(this).scrollLeft() - (delta * 0.5));
+          event.preventDefault();
+        });
+      });
+    </script>
+  </body>
+</html>

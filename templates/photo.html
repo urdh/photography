@@ -1,0 +1,31 @@
+<article class="photo">
+  <picture>
+    <source media="(max-height: 480px)" srcset="$url("480px")$ 1x, $url("960px")$ 2x">
+    <source media="(min-height: 481px)" srcset="$url("800px")$ 1x, $url("1600px")$ 2x">
+    <img srcset="$url("800px")$ 1x, $url("1600px")$ 2x" src="$url("960px")$">
+  </picture>
+  <h1 xmlns:dct="http://purl.org/dc/terms/" href="http://purl.org/dc/dcmitype/StillImage" property="dct:title" rel="dct:type">
+    $title$
+  </h1>
+  <section class="metadata">
+    <p>
+      <span class="camera">$exif("camera")$$if(exif("lens"))$ + $exif("lens")$$endif$</span>
+    </p>
+    <p>
+      $if(exif("filmtype"))-$<span class="film">$exif("filmtype")$</span>$endif$
+      $if(exif("aperture"))$
+        $-if(exif("shutter"))$
+          <span class="technical">$exif("shutter")$ at $exif("aperture")$</span>
+        $-endif$
+      $-endif$
+      $if(exif("speed"))$<span class="iso">(ISO $exif("speed")$)</span>$endif$
+    </p>
+    <p class="license">
+      $-if(exif("license"))$
+        <a rel="license" href="$exif("license")$">$exif("copyright")$</a>
+      $else$
+        $exif("copyright")$
+      $endif$
+    </p>
+  </section>
+</article>

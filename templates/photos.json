@@ -1,0 +1,9 @@
+[
+$-for(photos)$
+  {
+    "url": "TODO (parent collection url with fragment?",
+    "title": "$title$",
+    "camera": "$exif("camera")$"
+  }$sep$,
+$-endfor$
+]

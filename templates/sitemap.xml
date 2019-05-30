@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+        xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">
+  <url>
+    <loc>$root$/</loc>
+    <changefreq>weekly</changefreq>
+    <priority>1.0</priority>
+  </url>
+$-for(collections)$
+  <url>
+    <loc>$root$$url$</loc>
+    <lastmod>$if(updated)$$updated$$else$$date$$endif$</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+$-for(photos)$
+    <image:image>
+      <image:loc>$root$$url("large")$</image:loc>
+      <image:title>$title$</image:title>
+      $-if(exif("location"))$
+      <image:geo_location>$exif("location")$</image:geo_location>
+      $-endif$
+      $-if(exif("license"))$
+      <image:license>$exif("license")$</image:license>
+      $-endif$
+    </image:image>
+$-endfor$
+  </url>
+$-endfor$
+</urlset>
