@@ -58,7 +58,6 @@ main = hakyllWith config  $ do
     match photoPathRegex $ version "480px"  $ resize "jpeg" 480
     match photoPathRegex $ version "800px"  $ resize "jpeg" 800
     match photoPathRegex $ version "960px"  $ resize "jpeg" 960
-    match photoPathRegex $ version "1600px" $ resize "jpeg" 1600
 
     -- Style sheets and assets
     match "*.css" $ do
