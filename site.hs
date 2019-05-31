@@ -33,6 +33,8 @@ root = "http://localhost:8000"
 config :: Configuration
 config = (defaultConfiguration)
 
+photoPathRegex :: Pattern
+photoPathRegex = fromRegex "collections/.+/.+\\.(tif|tiff|jpg|jpeg)"
 
 --------------------------------------------------------------------------------
 main :: IO ()
@@ -48,15 +50,15 @@ main = hakyllWith config  $ do
                 >>= cleanIndexUrls
 
     -- Photographies in a collection
-    match "collections/*/*.tiff" $
+    match photoPathRegex $
         compile $ do
             makeItem ""
                 >>= loadAndApplyTemplate "templates/photo.html" photoContext
                 >>= cleanIndexUrls
-    match "collections/*/*.tiff" $ version "480px"  $ resize "jpeg" 480
-    match "collections/*/*.tiff" $ version "800px"  $ resize "jpeg" 800
-    match "collections/*/*.tiff" $ version "960px"  $ resize "jpeg" 960
-    match "collections/*/*.tiff" $ version "1600px" $ resize "jpeg" 1600
+    match photoPathRegex $ version "480px"  $ resize "jpeg" 480
+    match photoPathRegex $ version "800px"  $ resize "jpeg" 800
+    match photoPathRegex $ version "960px"  $ resize "jpeg" 960
+    match photoPathRegex $ version "1600px" $ resize "jpeg" 1600
 
     -- Style sheets and assets
     match "*.css" $ do
@@ -220,7 +222,7 @@ collectionContext =
     listFieldWith "showcase" photoContext      (fmap (take 1) . photos) <>
     defaultContext'
     where
-        collectionTiffs = (\p -> (takeDirectory p) </> "*.tiff") . toFilePath
+        collectionTiffs = fromRegex . (\p -> (takeDirectory p) </> ".+\\.(tif|tiff|jpg|jpeg)") . toFilePath
         photos = fmap (reverse . chronological) . (photosFrom . collectionTiffs . itemIdentifier)
         photoDate fmt = formatTime defaultTimeLocale fmt . getPhotoItemDate . itemIdentifier
 
@@ -232,7 +234,7 @@ archiveContext =
     defaultContext'
     where
         collections = alphabetical <$> loadAllSnapshots (fromGlob "collections/*/index.*") "raw"
-        photos = fmap (reverse . chronological) $ (photosFrom "collections/*/*.tiff")
+        photos = fmap (reverse . chronological) $ (photosFrom photoPathRegex)
 
 defaultContext' :: Context String
 defaultContext' =
@@ -242,8 +244,8 @@ defaultContext' =
 
 
 --------------------------------------------------------------------------------
-photosFrom :: (Binary a, Typeable a) => String -> Compiler [Item a]
-photosFrom p = loadAll (fromGlob p .&&. hasNoVersion)
+photosFrom :: (Binary a, Typeable a) => Pattern -> Compiler [Item a]
+photosFrom p = loadAll (p .&&. hasNoVersion)
 
 
 --------------------------------------------------------------------------------
