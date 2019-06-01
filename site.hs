@@ -9,10 +9,10 @@ import           Helpers.Contexts (archiveContext, collectionContext,
 
 --------------------------------------------------------------------------------
 root :: String
-root = "http://localhost:8000"
+root = "http://photography.sigurdhsson.org"
 
 config :: Configuration
-config = defaultConfiguration
+config = defaultConfiguration {deployCommand = "surge _site/"}
 
 extensions :: String
 extensions = ".+\\.(tif|tiff|jpg|jpeg)"
@@ -83,6 +83,11 @@ main = hakyllWith config  $ do
         >>= applyAsTemplate archiveContext'
         >>= cleanIndexUrls
   match "templates/*" $ compile templateBodyCompiler
+
+  -- CNAME and robots.txt files
+  match ("CNAME" .||. "robots.txt") $ do
+    route   $ idRoute
+    compile $ copyFileCompiler
 
 --------------------------------------------------------------------------------
 resize :: String -> Int -> Rules ()
