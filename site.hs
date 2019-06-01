@@ -9,7 +9,7 @@ import           Helpers.Contexts (archiveContext, collectionContext,
 
 --------------------------------------------------------------------------------
 root :: String
-root = "http://photography.sigurdhsson.org"
+root = "https://photography.sigurdhsson.org"
 
 config :: Configuration
 config = defaultConfiguration {deployCommand = "surge _site/"}

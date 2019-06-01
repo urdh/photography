@@ -25,4 +25,4 @@ User-agent: *
 Disallow: /
 
 # We have a sitemap!
-Sitemap: http://photography.sigurdhsson.org/sitemap.xml
+Sitemap: https://photography.sigurdhsson.org/sitemap.xml
