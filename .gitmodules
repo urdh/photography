@@ -1,0 +1,3 @@
+[submodule "collections"]
+	path = collections
+	url = git@github.com:urdh/photography-collections.git
