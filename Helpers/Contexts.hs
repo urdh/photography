@@ -11,7 +11,7 @@ import           Data.Time.Format               (defaultTimeLocale, formatTime)
 import           Hakyll.Core.Compiler           (Compiler, getRoute, loadAll,
                                                  loadAllSnapshots)
 import           Hakyll.Core.Identifier         (setVersion, toFilePath)
-import           Hakyll.Core.Identifier.Pattern (Pattern, fromRegex,
+import           Hakyll.Core.Identifier.Pattern (Pattern, fromRegex, fromGlob,
                                                  hasNoVersion, (.&&.))
 import           Hakyll.Core.Item               (Item (..))
 import           Hakyll.Web.Html                (toUrl)
@@ -26,10 +26,11 @@ import           Helpers.Photos                 (alphabetical, chronological,
 import           System.FilePath                (takeDirectory, (</>))
 import           Type.Reflection                (Typeable)
 
-photoContext :: Context String -> Context String
-photoContext rootContext =
+photoContext :: Context String -> Pattern -> String -> Context String
+photoContext rootContext indexPaths extensions =
   functionField "url"
     (\[v] -> fmap (maybe empty toUrl) . getRoute . setVersion (Just v) . itemIdentifier) <>
+  listFieldWith   "parents" (collectionContext rootContext indexPaths extensions) collections <>
   photoFrameField "frame"           <>
   photoRollField  "roll"            <>
   photoDateField  "date" "%Y-%m-%d" <>
@@ -37,13 +38,16 @@ photoContext rootContext =
   exifKeyField    "title" "title"   <>
   rootContext                       <>
   defaultContext
+  where
+    collectionItems = ((.&&.) indexPaths) . fromGlob . (\p -> takeDirectory p </> "*") . toFilePath
+    collections = flip loadAllSnapshots "raw" . collectionItems . itemIdentifier
 
-collectionContext :: Context String -> String -> Context String
-collectionContext rootContext extensions =
+collectionContext :: Context String -> Pattern -> String -> Context String
+collectionContext rootContext indexPaths extensions =
   field "updated"
-    (fmap (maybe empty (photoDate "%Y-%m-%d" . fst) . uncons) . photos)        <>
-  listFieldWith "photos"   (photoContext rootContext) photos                   <>
-  rootContext                                                                  <>
+    (fmap (maybe empty (photoDate "%Y-%m-%d" . fst) . uncons) . photos)          <>
+  listFieldWith "photos" (photoContext rootContext indexPaths extensions) photos <>
+  rootContext                                                                    <>
   defaultContext
   where
     collectionTiffs = fromRegex . (\p -> takeDirectory p </> extensions) . toFilePath
@@ -52,9 +56,9 @@ collectionContext rootContext extensions =
 
 archiveContext :: Context String -> Pattern -> Pattern -> String -> Context String
 archiveContext rootContext indexPaths photoPaths extensions =
-  listField "collections" (collectionContext rootContext extensions) collections         <>
-  listField "photos"      (photoContext rootContext)                 photos              <>
-  rootContext                                                                            <>
+  listField "collections" (collectionContext rootContext indexPaths extensions) collections <>
+  listField "photos"      (photoContext rootContext indexPaths extensions)      photos      <>
+  rootContext                                                                               <>
   defaultContext
   where
     collections = alphabetical <$> loadAllSnapshots indexPaths "raw"

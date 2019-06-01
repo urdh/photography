@@ -109,10 +109,10 @@ stripSuffix suffix' str
 
 --------------------------------------------------------------------------------
 photoContext' :: Context String
-photoContext' = photoContext rootContext
+photoContext' = photoContext rootContext indexPaths extensions
 
 collectionContext' :: Context String
-collectionContext' = collectionContext rootContext extensions
+collectionContext' = collectionContext rootContext indexPaths extensions
 
 archiveContext' :: Context String
 archiveContext' = archiveContext rootContext indexPaths photoPaths extensions
