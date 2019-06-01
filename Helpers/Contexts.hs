@@ -43,7 +43,6 @@ collectionContext rootContext extensions =
   field "updated"
     (fmap (maybe empty (photoDate "%Y-%m-%d" . fst) . uncons) . photos)        <>
   listFieldWith "photos"   (photoContext rootContext) photos                   <>
-  listFieldWith "showcase" (photoContext rootContext) (fmap (take 1) . photos) <>
   rootContext                                                                  <>
   defaultContext
   where
@@ -55,7 +54,6 @@ archiveContext :: Context String -> Pattern -> Pattern -> String -> Context Stri
 archiveContext rootContext indexPaths photoPaths extensions =
   listField "collections" (collectionContext rootContext extensions) collections         <>
   listField "photos"      (photoContext rootContext)                 photos              <>
-  listField "showcase"    (photoContext rootContext)                 (take 1 <$> photos) <>
   rootContext                                                                            <>
   defaultContext
   where

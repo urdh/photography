@@ -56,7 +56,7 @@ main = hakyllWith config  $ do
     route   $ idRoute
     compile $
       getResourceBody
-        >>= applyAsTemplate                               archiveContext'
+        >>= applyAsTemplate                               rootContext
         >>= loadAndApplyTemplate "templates/default.html" rootContext
         >>= cleanIndexUrls
 

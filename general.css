@@ -101,9 +101,6 @@ main>header h1 {
   position: relative;
   top: -3em;
 }
-main>header#home {
-  display: none;
-}
 .photo {
   height: 640px;
 }
