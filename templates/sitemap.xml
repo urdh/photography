@@ -14,7 +14,7 @@ $-for(collections)$
     <priority>0.8</priority>
 $-for(photos)$
     <image:image>
-      <image:loc>$root$$url("large")$</image:loc>
+      <image:loc>$root$$url("960px")$</image:loc>
       <image:title>$title$</image:title>
       $-if(exif("location"))$
       <image:geo_location>$exif("location")$</image:geo_location>
