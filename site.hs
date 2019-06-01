@@ -51,8 +51,8 @@ main = hakyllWith config  $ do
     route   $ idRoute
     compile $ compressCssCompiler
 
-  -- Index
-  match "index.html" $ do
+  -- Index, 404 page
+  match ("index.html" .||. "404.html") $ do
     route   $ idRoute
     compile $
       getResourceBody

@@ -101,6 +101,14 @@ main>header h1 {
   position: relative;
   top: -3em;
 }
+.text {
+  height: 640px;
+  width: 0px;
+  overflow-x: visible;
+}
+.text>* {
+  width: 28em;
+}
 .photo {
   height: 640px;
 }
@@ -110,7 +118,6 @@ main>header h1 {
 .photo:last-child {
   width: 0px;
   overflow-x: visible;
-  background:red;
 }
 .photo:last-child h1,
 .photo:last-child .metadata {
