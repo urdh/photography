@@ -33,13 +33,14 @@
           {
             $$('.sidebar').removeClass('hidden');
           }
-        });
+        }).css('cursor', 'pointer');
         // Scrolling horizontally.
-        $$('body').on('mousewheel DOMMouseScroll', function(event){
-          var delta = (event.originalEvent.wheelDelta || -event.originalEvent.detail);
-          $$(this).scrollLeft($$(this).scrollLeft() - (delta * 0.5));
-          event.preventDefault();
-        });
+        window.addEventListener('wheel', function(event) {
+          if (event.deltaY) {
+            $$('body').scrollLeft($$('body').scrollLeft() + event.deltaY);
+            event.preventDefault();
+          }
+        }, { 'passive': false });
       });
     </script>
   </body>
