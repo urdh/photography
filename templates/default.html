@@ -22,21 +22,26 @@
         $$('.photo picture>img').click(function() {
           $$('.magnified').not($$(this)).removeClass('magnified');
           $$(this).toggleClass('magnified');
-          if ($$(this).hasClass('magnified'))
-          {
+          if ($$(this).hasClass('magnified')) {
             $$('.sidebar').addClass('hidden');
-            $$([document.documentElement, document.body]).animate({
-                scrollLeft: ($$(this).offset().left - 300)
-            }, 300);
-          }
-          else
-          {
+            if ($$('main').css('display') == 'flex') {
+              var offset = $$('.sidebar').outerWidth() + parseFloat($$('.sidebar').css('left'));
+              $$([document.documentElement, document.body]).animate({
+                  scrollLeft: ($$(this).offset().left - offset)
+              }, 300);
+            } else {
+              var offset = $$(window).height() * 0.1;
+              $$([document.documentElement, document.body]).animate({
+                  scrollTop: ($$(this).offset().top - offset)
+              }, 300);
+            }
+          } else {
             $$('.sidebar').removeClass('hidden');
           }
         }).css('cursor', 'pointer');
         // Scrolling horizontally.
         window.addEventListener('wheel', function(event) {
-          if (event.deltaY) {
+          if (event.deltaY && ($$('main').css('display') == 'flex')) {
             $$('body').scrollLeft($$('body').scrollLeft() + event.deltaY);
             event.preventDefault();
           }
