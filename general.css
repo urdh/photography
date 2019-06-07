@@ -209,8 +209,8 @@ main {
 main h1 {
   text-align: center;
 }
-main h1:before,
-main h1:after {
+main>header h1:before,
+main>header h1:after {
   content: ' ~ '
 }
 .photo {
