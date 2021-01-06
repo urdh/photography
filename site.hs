@@ -84,8 +84,8 @@ main = hakyllWith config  $ do
         >>= cleanIndexUrls
   match "templates/*" $ compile templateBodyCompiler
 
-  -- CNAME and robots.txt files
-  match ("CNAME" .||. "robots.txt") $ do
+  -- CNAME, robots.txt and vercel.json files
+  match ("CNAME" .||. "robots.txt" .||. "vercel.json") $ do
     route   $ idRoute
     compile $ copyFileCompiler
 
