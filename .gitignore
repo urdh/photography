@@ -1,3 +1,6 @@
+### Vercel ###
+.vercel/
+
 ### Hakyll ###
 _site/
 _cache/
