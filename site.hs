@@ -12,7 +12,7 @@ root :: String
 root = "https://photography.sigurdhsson.org"
 
 config :: Configuration
-config = defaultConfiguration {deployCommand = "surge _site/"}
+config = defaultConfiguration {deployCommand = "vercel deploy _site/"}
 
 extensions :: String
 extensions = ".+\\.(tif|tiff|jpg|jpeg)"
@@ -84,8 +84,8 @@ main = hakyllWith config  $ do
         >>= cleanIndexUrls
   match "templates/*" $ compile templateBodyCompiler
 
-  -- CNAME, robots.txt and vercel.json files
-  match ("CNAME" .||. "robots.txt" .||. "vercel.json") $ do
+  -- robots.txt and vercel.json files
+  match ("robots.txt" .||. "vercel.json") $ do
     route   $ idRoute
     compile $ copyFileCompiler
 

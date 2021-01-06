@@ -23,7 +23,7 @@ stack exec site build
 
 ## Deploying
 
-The site itself is hosted on [Surge](https://surge.sh), and can be deployed (with the correct credentials
+The site itself is hosted on [Vercel](https://vercel.com), and can be deployed (with the correct credentials
 in place) using the built-in deployment support in Hakyll.
 
 ```bash
