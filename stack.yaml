@@ -38,9 +38,9 @@ packages:
 # using the same syntax as the packages field.
 # (e.g., acme-missiles-0.3)
 extra-deps:
-- git: git@github.com:urdh/hakyll-images.git
+- git: https://github.com/urdh/hakyll-images.git
   commit: 79c8b92ca0b146c0cffb41c2015e67a73ce9437f
-- git: git@github.com:rudchenkos/hsexif.git
+- git: https://github.com/rudchenkos/hsexif.git
   commit: f51faa801b03e72af3029690d0d8bb3b66a45842
 
 # Override default flag values for local packages and extra-deps
