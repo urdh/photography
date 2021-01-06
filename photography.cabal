@@ -10,13 +10,13 @@ executable site
   build-depends:    base == 4.*
                   , binary == 0.8.*
                   , bytestring == 0.10.*
-                  , containers == 0.5.*
+                  , containers == 0.6.*
                   , filepath == 1.4.*
-                  , time == 1.8.*
+                  , time == 1.9.*
                   , text == 1.2.*
-                  , regex-base == 0.93.*
-                  , regex == 1.0.*
-                  , hakyll == 4.12.*
+                  , regex-base == 0.94.*
+                  , regex == 1.1.*
+                  , hakyll == 4.13.*
                   , hakyll-images == 0.4.*
                   , hsexif == 0.6.*
   ghc-options:      -O3 -threaded -Wall
