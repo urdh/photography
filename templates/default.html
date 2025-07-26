@@ -18,6 +18,14 @@
     </script>
     <script type="text/javascript">
       $$(function () {
+        // Save the initial offset of every image
+        visualViewport.onresize = function() {
+          $$('.photo picture>img').each(function() {
+            $$(this).data('baseline-left', $$(this).offset().left);
+            $$(this).data('baseline-top', $$(this).offset().top);
+          });
+        };
+        visualViewport.onresize();
         // Magnifying a photo.
         $$('.photo picture>img').click(function() {
           $$('.magnified').not($$(this)).removeClass('magnified');
@@ -26,13 +34,15 @@
             $$('.sidebar').addClass('hidden');
             if ($$('main').css('display') == 'flex') {
               var offset = $$('.sidebar').outerWidth() + parseFloat($$('.sidebar').css('left'));
+              var baseline = $$(this).data('baseline-left') || $$(this).offset().left;
               $$([document.documentElement, document.body]).animate({
-                  scrollLeft: ($$(this).offset().left - offset)
+                  scrollLeft: (baseline - offset)
               }, 300);
             } else {
               var offset = $$(window).height() * 0.1;
+              var baseline = $$(this).data('baseline-top') || $$(this).offset().top;
               $$([document.documentElement, document.body]).animate({
-                  scrollTop: ($$(this).offset().top - offset)
+                  scrollTop: (baseline - offset)
               }, 300);
             }
           } else {
