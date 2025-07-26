@@ -14,21 +14,16 @@ jobs:
     env:
       PRODUCTION: ${{ github.event_name == 'push' }}
     steps:
-      - uses: actions/checkout@v3
-      - run: git ls-tree HEAD | awk '$2 == "commit" { printf "::set-output name=%s_ref::%s\n", $4, $3 }'
-        id: inspect-submodules
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         with:
-          repository: urdh/photography-collections
-          path: collections
-          ref: ${{ steps.inspect-submodules.outputs.collections_ref }}
-          ssh-key: ${{ secrets.SSH_KEY }}
+          token: ${{ secrets.ACCESS_TOKEN }}
+          submodules: true
           lfs: true
-      - uses: haskell/actions/setup@v1
+      - uses: haskell-actions/setup@v2
         with:
           enable-stack: true
           stack-no-global: true
-      - uses: actions/cache@v2
+      - uses: actions/cache@v4
         with:
           path: ~/.stack
           key: ${{ runner.os }}-stack
