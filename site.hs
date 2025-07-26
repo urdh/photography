@@ -2,10 +2,8 @@
 
 import           Data.List        (isSuffixOf)
 import           Hakyll
-import           Hakyll.Images    (ensureFitCompiler, loadImage,
-                                   rotateFromExifCompiler)
-import           Helpers.Contexts (archiveContext, collectionContext,
-                                   photoContext)
+import           Hakyll.Images    (ensureFitCompiler, loadImage, compressJpgCompiler)
+import           Helpers.Contexts (archiveContext, collectionContext, photoContext)
 
 --------------------------------------------------------------------------------
 root :: String
@@ -93,7 +91,10 @@ main = hakyllWith config  $ do
 resize :: String -> Int -> Rules ()
 resize ext h = do
   route $ setExtension $ show h ++ "px." ++ ext
-  compile $ loadImage >>= ensureFitCompiler 65535 h >>= rotateFromExifCompiler
+  compile $
+    loadImage
+      >>= compressJpgCompiler (100 :: Integer)
+      >>= ensureFitCompiler 65535 h
 
 --------------------------------------------------------------------------------
 cleanIndexUrls :: Item String -> Compiler (Item String)

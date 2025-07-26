@@ -17,8 +17,8 @@
 #
 # resolver: ./custom-snapshot.yaml
 # resolver: https://example.com/snapshots/2018-01-01.yaml
-resolver: lts-16.27
-compiler: ghc-8.10.3
+resolver: lts-22.44
+compiler: ghc-9.6.7
 
 # User packages to be built.
 # Various formats can be used as shown in the example below.
@@ -39,10 +39,10 @@ packages:
 # using the same syntax as the packages field.
 # (e.g., acme-missiles-0.3)
 extra-deps:
-- git: https://github.com/urdh/hakyll-images.git
-  commit: 79c8b92ca0b146c0cffb41c2015e67a73ce9437f
+- git: https://github.com/LaurentRDC/hakyll-images.git
+  commit: 1e68798c4d66af7ae5fad1eeea00a402f05dffa2
 - git: https://github.com/emmanueltouzery/hsexif.git
-  commit: 095b7711d9ec44d0d39dbd82e52e751c8dde39dc
+  commit: 8e0ee6721cdfd0c7d474a16fdab6567b5a8ada3e
 
 # Override default flag values for local packages and extra-deps
 # flags: {}
