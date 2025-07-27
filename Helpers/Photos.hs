@@ -13,13 +13,15 @@ module Helpers.Photos
   ) where
 
 import           Control.Applicative         (Alternative (..))
+import qualified Data.ByteString             as DBS
 import qualified Data.ByteString.Char8       as DBC
 import           Data.Either                 (fromRight)
 import           Data.List                   (sortOn)
+import           Data.List.Extra             (headDef)
 import qualified Data.Map.Strict             as DMS
 import           Data.Maybe                  (catMaybes, fromJust)
 import qualified Data.Text                   as T
-import           Data.Text.Encoding          (decodeUtf8)
+import           Data.Text.Encoding          (decodeUtf8, decodeASCII)
 import           Data.Time.Clock             (UTCTime (..))
 import           Data.Time.Format            (defaultTimeLocale, formatTime,
                                               parseTimeM)
@@ -31,6 +33,7 @@ import           Hakyll.Web.Template.Context (Context (..), field,
 import           System.FilePath             (takeBaseName)
 import           System.IO.Unsafe            (unsafePerformIO)
 import           Text.RE.TDFA.String
+import           Text.XML.HXT.Core
 
 getPhotoItemDate :: Identifier -> UTCTime
 getPhotoItemDate id' =
@@ -119,7 +122,7 @@ getExifValue = getValue
     getValue "aperture" = unwords . map (prettify (T.replace "f/" "ƒ/"))   . findAll [fnumber]
     getValue "speed"    = unwords . map (prettify id)                      . findAll [isoSpeedRatings]
     getValue "copyright"= unwords . map (prettify fixEncoding)             . findAll [copyright]
-    getValue "license"  = const "" -- TODO: read XMP tag cc:license
+    getValue "license"  = headDef "" . concatMap (getXmlAttribute' "cc:license") . findAll [applNotes]
     getValue "location" = const "" -- TODO: read EXIF tag and do GPS lookup
     getValue "title"    = unwords . map (prettify fixEncoding)             . findAll [imageDescription]
     getValue tag        = error $ unwords ["Unknown EXIF field:", tag]
@@ -129,6 +132,24 @@ getExifValue = getValue
     -- Fix encoding of string values by reinterpreting the string as UTF-8
     fixEncoding :: T.Text -> T.Text
     fixEncoding = decodeUtf8 . DBC.pack . T.unpack
+    -- Interpret the given EXIF value as UTF-8 text
+    asUtf8Text :: ExifValue -> Maybe T.Text
+    asUtf8Text (ExifText       v) = Just . fixEncoding . T.pack $ v
+    asUtf8Text (ExifNumberList v) = Just . decodeUtf8 . DBS.pack . map fromIntegral $ v
+    asUtf8Text (ExifUndefined  v) = uncurry decodeExifUndefined . DBS.splitAt 8 $ v
+    asUtf8Text _ = Nothing
+    -- Interpret an ExifUndefined value given its prefix
+    decodeExifUndefined :: DBC.ByteString -> DBC.ByteString -> Maybe T.Text
+    decodeExifUndefined "ASCII\0\0\0" v = Just . decodeASCII $ v
+    decodeExifUndefined "UNICODE\0"   v = Just . decodeUtf8 $ v
+    decodeExifUndefined _ _ = Nothing
+    -- Wrap getXmlAttribute to work with ExifValue items
+    getXmlAttribute' :: String -> (ExifTag, ExifValue) -> [String]
+    getXmlAttribute' key = maybe [] (getXmlAttribute key . T.unpack) . asUtf8Text . snd
+    -- Get all values of the given attribute from the input XML
+    getXmlAttribute :: String -> String -> [String]
+    getXmlAttribute key = runLA (xreadDoc >>> multi (isElem >>> getAttrValue0 key))
     -- Keys not in hsexif
+    applNotes = ExifTag IFD0 (Just "applicationNotes") 0x02bc $ T.pack . show
     lensMake  = ExifTag ExifSubIFD (Just "lensMake")  0xa433 $ T.pack . show
     lensModel = ExifTag ExifSubIFD (Just "lensModel") 0xa434 $ T.pack . show
