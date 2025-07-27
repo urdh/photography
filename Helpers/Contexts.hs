@@ -36,6 +36,7 @@ photoContext rootContext indexPaths extensions =
   photoDateField  "date" "%Y-%m-%d" <>
   photoExifField  "exif"            <>
   exifKeyField    "title" "title"   <>
+  exifKeyField    "artist" "artist" <>
   rootContext                       <>
   defaultContext
   where
