@@ -115,6 +115,7 @@ getExifValue = getValue
     -- Maps string keys to specific (potentially composed) EXIF tags
     -- See http://hackage.haskell.org/package/hsexif-0.6.1.6/docs/Graphics-HsExif.html for keys
     getValue :: String -> DMS.Map ExifTag ExifValue -> String
+    getValue "artist"   = unwords . map (prettify fixEncoding)             . findAll [artist]
     getValue "camera"   = unwords . map (prettify fixEncoding)             . findAll [make, model]
     getValue "lens"     = unwords . map (prettify fixEncoding)             . findAll [lensMake, lensModel]
     getValue "filmtype" = unwords . map (prettify id)                      . findAll [userComment]
