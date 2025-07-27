@@ -6,10 +6,10 @@
     <source media="(min-height: 481px)" srcset="$url("800px")$ 1x">
     <img src="$url("960px")$">
   </picture>
-  <h1 property="dc:title">
+  <h2 property="dc:title">
     $title$
-  </h1>
-  <section class="metadata">
+  </h2>
+  <div class="metadata">
     <p>
       <span class="camera">$exif("camera")$$if(exif("lens"))$ + $exif("lens")$$endif$</span>
     </p>
@@ -29,5 +29,5 @@
         $exif("copyright")$
       $endif$
     </p>
-  </section>
+  </div>
 </article>
