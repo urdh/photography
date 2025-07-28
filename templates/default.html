@@ -18,15 +18,17 @@
     </script>
     <script>
       $$(function () {
-        // Save the initial offset of every image
+        // Save the offsets of every image on window resize.
         visualViewport.onresize = function() {
           $$('.photo picture>img').each(function() {
             $$(this).data('baseline-left', $$(this).offset().left);
             $$(this).data('baseline-top', $$(this).offset().top);
           });
         };
+        // Also save the offsets immediately & when all images are loaded.
+        $$(window).on("load", visualViewport.onresize);
         visualViewport.onresize();
-        // Magnifying a photo.
+        // Magnifying a photo when clicked.
         $$('.photo picture>img').click(function() {
           $$('.magnified').not($$(this)).removeClass('magnified');
           $$(this).toggleClass('magnified');
