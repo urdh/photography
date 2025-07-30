@@ -150,7 +150,10 @@ getExifValue = getValue
     getXmlAttribute' key = maybe [] (getXmlAttribute key . T.unpack) . asUtf8Text . snd
     -- Get all values of the given attribute from the input XML
     getXmlAttribute :: String -> String -> [String]
-    getXmlAttribute key = runLA (xreadDoc >>> multi (isElem >>> getAttrValue0 key))
+    getXmlAttribute key = runLA (xreadDoc >>> multi (
+                              (isElem >>> getAttrValue0 key) <+>
+                              (isElem >>> hasName key >>> getAttrValue0 "rdf:resource")
+                          ))
     -- Unclutter the lens make by dropping is if it is the same as the camera make
     unclutter :: Eq a => [a] -> [a]
     unclutter (x:y:xs) = [y | x /= y] ++ xs
