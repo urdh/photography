@@ -1,3 +1,5 @@
+{-# LANGUAGE TupleSections #-}
+
 module Helpers.Contexts
   ( photoContext
   , collectionContext
@@ -8,7 +10,8 @@ import           Control.Applicative            (Alternative (..))
 import           Control.Conditional            (if')
 import           Control.Monad                  (ap, liftM2, msum, (<=<))
 import           Data.Binary                    (Binary (..))
-import           Data.List                      (singleton)
+import           Data.List                      (singleton, sortOn)
+import           Data.Maybe                     (fromMaybe)
 import           Data.Time.Clock                (UTCTime)
 import           Data.Time.Format               (TimeLocale, defaultTimeLocale, formatTime,
                                                  parseTimeM)
@@ -18,17 +21,17 @@ import           Hakyll.Core.Identifier         (Identifier, setVersion, toFileP
 import           Hakyll.Core.Identifier.Pattern (Pattern, fromRegex, fromGlob,
                                                  hasNoVersion, (.&&.))
 import           Hakyll.Core.Item               (Item (..))
-import           Hakyll.Core.Metadata           (MonadMetadata (..), lookupString)
+import           Hakyll.Core.Metadata           (MonadMetadata (..), getMetadataField)
 import           Hakyll.Web.Html                (toUrl)
 import           Hakyll.Web.Template.Context    (Context (..), defaultContext,
                                                  field, functionField, getItemUTC,
                                                  listField, listFieldWith)
-import           Helpers.Photos                 (alphabetical, chronological,
+import           Helpers.Photos                 (chronological,
                                                  exifKeyField, getPhotoItemDate,
                                                  photoDateField, photoExifField,
                                                  photoFrameField,
                                                  photoRollField)
-import           System.FilePath                (takeDirectory, (</>))
+import           System.FilePath                (takeDirectory, takeBaseName, (</>))
 import           Type.Reflection                (Typeable)
 
 photoContext :: Context String -> Pattern -> String -> Context String
@@ -72,18 +75,24 @@ archiveContext rootContext indexPaths photoPaths extensions =
   rootContext                                                                               <>
   defaultContext
   where
-    collections = alphabetical <$> loadAllSnapshots indexPaths "raw"
+    collections = alphabetical =<< loadAllSnapshots indexPaths "raw"
     photos = reverse . chronological <$> photosFrom photoPaths
 
 --------------------------------------------------------------------------------
 photosFrom :: (Binary a, Typeable a) => Pattern -> Compiler [Item a]
 photosFrom p = loadAll (p .&&. hasNoVersion)
 
+alphabetical :: (MonadMetadata m) => [Item a] -> m [Item a]
+alphabetical = sortByM $ ap ((<$>) . fromMaybe . takeBaseName . toFilePath)
+                            (`getMetadataField` "sort-by") . itemIdentifier
+  where
+    sortByM :: (Monad m, Ord k) => (a -> m k) -> [a] -> m [a]
+    sortByM f xs = map fst . sortOn snd <$> mapM (\x -> fmap (x,) (f x)) xs
+
 getUpdateUTC :: (Alternative m, MonadMetadata m) => TimeLocale -> Identifier -> m UTCTime
 getUpdateUTC locale id' = do
-    metadata <- getMetadata id'
-    let tryField k fmt = lookupString k metadata >>= parseTime' fmt
-    maybe empty return $ msum [tryField "updated" fmt | fmt <- formats]
+    field' <- getMetadataField id' "updated"
+    maybe empty return $ msum [field' >>= parseTime' fmt | fmt <- formats]
   where
     parseTime' = parseTimeM True locale
     formats    =
