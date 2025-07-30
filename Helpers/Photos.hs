@@ -15,6 +15,7 @@ module Helpers.Photos
 import           Control.Applicative         (Alternative (..))
 import qualified Data.ByteString             as DBS
 import qualified Data.ByteString.Char8       as DBC
+import           Data.Text.Normalize
 import           Data.Either                 (fromRight)
 import           Data.List                   (sortOn)
 import           Data.List.Extra             (headDef)
@@ -117,7 +118,7 @@ getExifValue = getValue
     getValue :: String -> DMS.Map ExifTag ExifValue -> String
     getValue "artist"   = unwords . map (prettify fixEncoding)             . findAll [artist]
     getValue "camera"   = unwords . map (prettify fixEncoding)             . findAll [make, model]
-    getValue "lens"     = unwords . map (prettify fixEncoding)             . findAll [lensMake, lensModel]
+    getValue "lens"     = unwords . unclutter . map (prettify fixEncoding) . findAll [make, lensMake, lensModel]
     getValue "filmtype" = unwords . map (prettify id)                      . findAll [userComment]
     getValue "shutter"  = unwords . map (prettify (T.replace " sec." "s")) . findAll [exposureTime]
     getValue "aperture" = unwords . map (prettify (T.replace "f/" "ƒ/"))   . findAll [fnumber]
@@ -132,7 +133,7 @@ getExifValue = getValue
     prettify f = T.unpack . f . uncurry prettyPrinter
     -- Fix encoding of string values by reinterpreting the string as UTF-8
     fixEncoding :: T.Text -> T.Text
-    fixEncoding = decodeUtf8 . DBC.pack . T.unpack
+    fixEncoding = normalize NFC . decodeUtf8 . DBC.pack . T.unpack
     -- Interpret the given EXIF value as UTF-8 text
     asUtf8Text :: ExifValue -> Maybe T.Text
     asUtf8Text (ExifText       v) = Just . fixEncoding . T.pack $ v
@@ -150,6 +151,10 @@ getExifValue = getValue
     -- Get all values of the given attribute from the input XML
     getXmlAttribute :: String -> String -> [String]
     getXmlAttribute key = runLA (xreadDoc >>> multi (isElem >>> getAttrValue0 key))
+    -- Unclutter the lens make by dropping is if it is the same as the camera make
+    unclutter :: Eq a => [a] -> [a]
+    unclutter (x:y:xs) = [y | x /= y] ++ xs
+    unclutter xs = xs
     -- Keys not in hsexif
     applNotes = ExifTag IFD0 (Just "applicationNotes") 0x02bc $ T.pack . show
     lensMake  = ExifTag ExifSubIFD (Just "lensMake")  0xa433 $ T.pack . show
