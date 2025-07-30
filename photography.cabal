@@ -15,6 +15,7 @@ executable site
                   , filepath == 1.4.*
                   , time == 1.12.*
                   , text == 2.0.*
+                  , unicode-transforms == 0.4.*
                   , regex-base == 0.94.*
                   , regex == 1.1.*
                   , hakyll == 4.16.*
