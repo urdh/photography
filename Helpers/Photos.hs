@@ -9,7 +9,6 @@ module Helpers.Photos
   , photoExifField
   , exifKeyField
   , chronological
-  , alphabetical
   ) where
 
 import           Control.Applicative         (Alternative (..))
@@ -86,9 +85,6 @@ exifKeyField key k =
 
 chronological :: [Item a] -> [Item a]
 chronological = sortOn $ getPhotoItemDate . itemIdentifier
-
-alphabetical :: [Item a] -> [Item a]
-alphabetical = sortOn $ takeBaseName . toFilePath . itemIdentifier
 
 splitPhotoFilename :: String -> (String, String, String)
 splitPhotoFilename str =
