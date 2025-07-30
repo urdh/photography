@@ -31,13 +31,13 @@ photoContext rootContext indexPaths extensions =
   functionField "url"
     (\[v] -> fmap (maybe empty toUrl) . getRoute . setVersion (Just v) . itemIdentifier) <>
   listFieldWith   "parents" (collectionContext rootContext indexPaths extensions) collections <>
-  photoFrameField "frame"           <>
-  photoRollField  "roll"            <>
-  photoDateField  "date" "%Y-%m-%d" <>
-  photoExifField  "exif"            <>
-  exifKeyField    "title" "title"   <>
-  exifKeyField    "artist" "artist" <>
-  rootContext                       <>
+  photoFrameField "frame"            <>
+  photoRollField  "roll"             <>
+  photoDateField  "taken" "%Y-%m-%d" <>
+  photoExifField  "exif"             <>
+  exifKeyField    "title" "title"    <>
+  exifKeyField    "artist" "artist"  <>
+  rootContext                        <>
   defaultContext
   where
     collectionItems = ((.&&.) indexPaths) . fromGlob . (\p -> takeDirectory p </> "*") . toFilePath

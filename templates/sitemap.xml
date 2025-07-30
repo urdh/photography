@@ -9,7 +9,7 @@
 $-for(collections)$
   <url>
     <loc>$root$$url$</loc>
-    <lastmod>$if(updated)$$updated$$else$$date$$endif$</lastmod>
+    <lastmod>$if(updated)$$updated$$else$$published$$endif$</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
 $-for(photos)$
