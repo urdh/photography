@@ -67,12 +67,12 @@ photoFrameField key =
 
 photoExifField :: String -> Context a
 photoExifField key =
-  functionField key $ \[k] i ->
+  functionField key $ \k i ->
     (\v ->
        if null v
          then empty
          else return v) $
-    getExifValue k $ getExifMap i
+    (getExifValue . head $ k) $ getExifMap i
 
 exifKeyField :: String -> String -> Context a
 exifKeyField key k =
