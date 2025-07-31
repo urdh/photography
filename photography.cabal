@@ -14,6 +14,7 @@ executable site
                   , containers == 0.6.*
                   , extra == 1.7.*
                   , filepath == 1.4.*
+                  , lens == 5.2.*
                   , time == 1.12.*
                   , text == 2.0.*
                   , unicode-transforms == 0.4.*
