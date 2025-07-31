@@ -38,7 +38,7 @@ import           Type.Reflection                (Typeable)
 photoContext :: Context String -> Pattern -> String -> Context String
 photoContext rootContext indexPaths extensions =
   functionField "url"
-    (\[v] -> fmap (maybe empty toUrl) . getRoute . setVersion (Just v) . itemIdentifier) <>
+    (\v -> fmap (maybe empty toUrl) . getRoute . setVersion (Just . head $ v) . itemIdentifier) <>
   listFieldWith   "parents" (collectionContext rootContext indexPaths extensions) collections <>
   photoFrameField "frame"            <>
   photoRollField  "roll"             <>
