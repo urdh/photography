@@ -8,7 +8,8 @@ module Helpers.Contexts
 
 import           Control.Applicative            (Alternative (..))
 import           Control.Conditional            (if')
-import           Control.Monad                  (ap, liftM2, msum, (<=<))
+import           Control.Lens.Lens              ((??))
+import           Control.Monad                  (ap, join, msum, (<=<))
 import           Data.Binary                    (Binary (..))
 import           Data.List                      (singleton, sortOn)
 import           Data.Maybe                     (fromMaybe)
@@ -64,8 +65,7 @@ collectionContext rootContext indexPaths extensions =
     getPhotoDates = map (getPhotoItemDate . itemIdentifier)
     getUpdateDate = flip (<|>) (return []) . fmap singleton . getUpdateUTC defaultTimeLocale . itemIdentifier
     getPublishDate = flip (<|>) (return []) . fmap singleton . getItemUTC defaultTimeLocale  . itemIdentifier
-    getAllDates = concatenate' getUpdateDate  getPublishDate (fmap getPhotoDates . photos)
-    concatenate' = (. liftM2 (liftA2 (++))) . (.) . liftM2 (liftA2 (++))
+    getAllDates = fmap join . sequence . ([getUpdateDate, getPublishDate, fmap getPhotoDates . photos] ??)
     maximum' = ap (flip if' empty . null) (return . maximum)
 
 archiveContext :: Context String -> Pattern -> Pattern -> String -> Context String
