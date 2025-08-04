@@ -14,10 +14,16 @@
       <span class="camera">$exif("camera")$$if(exif("lens"))$ + $exif("lens")$$endif$</span>
     </p>
     <p>
-      $if(exif("filmtype"))-$<span class="film">$exif("filmtype")$</span>$endif$
-      $if(exif("aperture"))$
-        $-if(exif("shutter"))$
+      $if(exif("filmtype"))-$
+        <span class="film">$exif("filmtype")$</span>
+      $else$
+        <span class="film">Digital</span>
+      $endif$
+      $if(exif("shutter"))$
+        $-if(exif("aperture"))$
           <span class="technical">$exif("shutter")$ at $exif("aperture")$</span>
+        $else$
+          <span class="technical">$exif("shutter")$</span>
         $-endif$
       $-endif$
       $if(exif("speed"))$<span class="iso">(ISO $exif("speed")$)</span>$endif$
