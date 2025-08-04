@@ -112,17 +112,17 @@ getExifValue = getValue
     -- Maps string keys to specific (potentially composed) EXIF tags
     -- See http://hackage.haskell.org/package/hsexif-0.6.1.6/docs/Graphics-HsExif.html for keys
     getValue :: String -> DMS.Map ExifTag ExifValue -> String
-    getValue "artist"   = unwords . map (prettify fixEncoding)             . findAll [artist]
-    getValue "camera"   = unwords . map (prettify fixEncoding)             . findAll [make, model]
-    getValue "lens"     = unwords . unclutter . map (prettify fixEncoding) . findAll [make, lensMake, lensModel]
-    getValue "filmtype" = unwords . map (prettify id)                      . findAll [userComment]
-    getValue "shutter"  = unwords . map (prettify (T.replace " sec." "s")) . findAll [exposureTime]
-    getValue "aperture" = unwords . map (prettify (T.replace "f/" "ƒ/"))   . findAll [fnumber]
-    getValue "speed"    = unwords . map (prettify id)                      . findAll [isoSpeedRatings]
-    getValue "copyright"= unwords . map (prettify fixEncoding)             . findAll [copyright]
-    getValue "license"  = headDef "" . concatMap (getXmlAttribute' "cc:license") . findAll [applNotes]
+    getValue "artist"   = unwords . map (prettify fixEncoding)                      . findAll [artist]
+    getValue "camera"   = unwords . map (prettify fixEncoding)                      . findAll [make, model]
+    getValue "lens"     = unwords . unclutter . map (prettify fixEncoding)          . findAll [make, lensMake, lensModel]
+    getValue "filmtype" = unwords . map (prettify id)                               . findAll [userComment]
+    getValue "shutter"  = unwords . take 1 . map (prettify (T.replace " sec." "s")) . findAll [exposureTime, shutterSpeedValue]
+    getValue "aperture" = unwords . take 1 . map (prettify (T.replace "f/" "ƒ/"))   . findAll [fnumber, apertureValue]
+    getValue "speed"    = unwords . map (prettify id)                               . findAll [isoSpeedRatings]
+    getValue "copyright"= unwords . map (prettify fixEncoding)                      . findAll [copyright]
+    getValue "license"  = headDef "" . concatMap (getXmlAttribute' "cc:license")    . findAll [applNotes]
     getValue "location" = const "" -- TODO: read EXIF tag and do GPS lookup
-    getValue "title"    = unwords . map (prettify fixEncoding)             . findAll [imageDescription]
+    getValue "title"    = unwords . map (prettify fixEncoding)                      . findAll [imageDescription]
     getValue tag        = error $ unwords ["Unknown EXIF field:", tag]
     -- Pretty-print an ExifValue given the ExifTag it belongs to
     prettify :: (T.Text -> T.Text) -> (ExifTag, ExifValue) -> String
