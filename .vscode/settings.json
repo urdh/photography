@@ -1,0 +1,5 @@
+{
+    "haskell.checkProject": false,
+    "haskell.cabalFormattingProvider": "none",
+    "haskell.formattingProvider": "stylish-haskell"
+}
