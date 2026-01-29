@@ -1,0 +1,18 @@
+{
+    "build": {
+        "context": "..",
+        "dockerfile": "../Dockerfile",
+        "target": "devcontainer"
+    },
+    "containerUser": "vscode",
+    "customizations": {
+        "vscode": {
+            "extensions": [
+                "haskell.haskell"
+            ],
+            "settings": {
+                "haskell.manageHLS": "PATH"
+            }
+        }
+    }
+}
