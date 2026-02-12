@@ -1,9 +1,7 @@
 ARG HASKELL_VERSION=9.6.7
 ARG DEBIAN_VERSION=bullseye
-ARG IMAGE_SOURCE=https://github.com/urdh/photography
 
 FROM haskell:${HASKELL_VERSION}-slim-${DEBIAN_VERSION} AS base
-LABEL org.opencontainers.image.source=https://github.com/urdh/photography
 
 # Create build directory
 RUN mkdir -p /opt/build
@@ -18,7 +16,6 @@ COPY stack.yaml stack.yaml.lock photography.cabal /opt/build/
 RUN stack build --only-snapshot
 
 FROM haskell:${HASKELL_VERSION}-${DEBIAN_VERSION} AS devcontainer
-LABEL org.opencontainers.image.source=https://github.com/urdh/photography
 ARG HASKELL_LANGUAGE_SERVER_VERSION=2.13.0.0
 ARG HASKELL_VERSION
 
@@ -67,34 +64,28 @@ EOF
 ENV PATH="/opt/hls/bin:$PATH"
 
 # Copy the settings & dependencies from the base image
-COPY --link --from=base /etc/stack/config.yaml /etc/stack/config.yaml
-COPY --link --chown=${USER_UID}:${USER_GID} \
+COPY --from=base /etc/stack/config.yaml /etc/stack/config.yaml
+COPY --chown=${USER_UID}:${USER_GID} \
     --from=base /root/.stack /${USERNAME}/.stack
 
 CMD ["sleep", "infinity"]
 
 FROM base AS builder
 
-# Copy the dependencies from the base image
-COPY --link --from=base /root/.stack /root/.stack
-
-# Mount the project sources, then build a static executable
-RUN --mount=type=bind,target=/opt/build,rw \
-    --mount=type=tmpfs,target=/opt/build/.stack-work \
+# Copy the project sources, then build a static executable
+RUN --mount=type=bind,source=src,target=/opt/build/src \
+    --mount=type=cache,target=/opt/build/.stack-work \
     stack install --only-locals --local-bin-path /usr/bin/
 
-FROM debian:${DEBIAN_VERSION}-slim AS site
-LABEL org.opencontainers.image.source=https://github.com/urdh/photography
+FROM builder AS generator
 
-# First, set up a sensible locale (any locale with UTF-8 will do)...
-RUN <<-EOF
-    apt-get update
-    apt-get install -y --no-install-recommends locales
-    localedef -i en_US -c -f UTF-8 -A /usr/share/locale/locale.alias en_US.UTF-8
-    rm -rf /var/lib/apt/lists/*
-EOF
-ENV LANG=en_US.UTF-8
+# Build the actual site using the `site` binary
+WORKDIR /workspace
+RUN --mount=type=bind,source=provider,target=/workspace/provider \
+    --mount=type=cache,target=/opt/build/_cache \
+    /usr/bin/site rebuild
 
-# ...then just copy the `site` binary from the builder
-COPY --from=builder /usr/bin/site /usr/bin/hakyll-site
-CMD ["/usr/bin/hakyll-site", "build"]
+FROM joseluisq/static-web-server:2 AS runtime
+
+COPY --from=generator /workspace/_site /var/public
+ENTRYPOINT ["/static-web-server", "--root=/var/public", "--health"]
