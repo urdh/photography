@@ -11,7 +11,7 @@ root :: String
 root = "https://photography.sigurdhsson.org"
 
 config :: Configuration
-config = defaultConfiguration {deployCommand = "vercel deploy _site/", providerDirectory = "provider"}
+config = defaultConfiguration {providerDirectory = "provider"}
 
 extensions :: String
 extensions = ".+\\.(tif|tiff|jpg|jpeg)"

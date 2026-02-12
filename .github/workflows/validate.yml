@@ -1,25 +1,19 @@
-name: "Deploy"
+name: "Test & validate"
 
 on:
-  push:
+  pull_request:
     branches: [master]
   workflow_dispatch:
 
 jobs:
-  deploy:
+  build:
     runs-on: ubuntu-latest
     name: Build containers
     steps:
-      - uses: docker/metadata-action@v5
-        with:
-          images: ghcr.io/${{ github.repository }}
-          tags: type=edge
-        id: meta
       - uses: actions/checkout@v6
         with:
-          token: ${{ secrets.ACCESS_TOKEN }}
-          submodules: true
-          lfs: true
+          submodules: false
+          lfs: false
       - uses: docker/login-action@v3
         with:
           registry: ghcr.io
@@ -29,11 +23,7 @@ jobs:
       - uses: docker/build-push-action@v6
         with:
           context: .
-          push: true
+          push: false
           cache-from: type=registry,ref=ghcr.io/${{ github.repository }}/site:cache
           cache-to: type=registry,ref=ghcr.io/${{ github.repository }}/site:cache,mode=max
-          tags: ${{ steps.meta.outputs.tags }}
-          labels: ${{ steps.meta.outputs.labels }}
-          target: runtime
-      - run: |
-          curl "https://api.sliplane.io/deploy/service_xqij84aqrhyq/${{ secrets.SLIPLANE_SECRET }}"
+          target: builder

@@ -20,14 +20,3 @@ Once the site generator itself has been built, the site itself can be generated 
 ```bash
 stack exec site build
 ```
-
-## Deploying
-
-The site itself is hosted on [Vercel](https://vercel.com), and can be deployed (with the correct credentials
-in place) using the built-in deployment support in Hakyll.
-
-```bash
-stack exec site deploy
-```
-
-
