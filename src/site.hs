@@ -4,13 +4,14 @@ import           Data.List        (isSuffixOf)
 import           Hakyll
 import           Hakyll.Images    (ensureFitCompiler, loadImage, compressJpgCompiler)
 import           Helpers.Contexts (archiveContext, collectionContext, photoContext)
+import           Helpers.Metadata (saveMetadata)
 
 --------------------------------------------------------------------------------
 root :: String
 root = "https://photography.sigurdhsson.org"
 
 config :: Configuration
-config = defaultConfiguration {deployCommand = "vercel deploy _site/"}
+config = defaultConfiguration {deployCommand = "vercel deploy _site/", providerDirectory = "provider"}
 
 extensions :: String
 extensions = ".+\\.(tif|tiff|jpg|jpeg)"
@@ -36,7 +37,8 @@ main = hakyllWith config  $ do
 
   -- Photographies in a collection
   match photoPaths $
-    compile $
+    compile $ do
+      saveMetadata
       makeItem ""
         >>= loadAndApplyTemplate "templates/photo.html" photoContext'
         >>= cleanIndexUrls
