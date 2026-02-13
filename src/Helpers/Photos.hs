@@ -13,9 +13,7 @@ module Helpers.Photos
 
 import           Control.Applicative         (Alternative (..), (<|>), asum)
 import           Control.Monad               (ap)
-import qualified Data.ByteString             as DBS
 import qualified Data.ByteString.Char8       as DBC
-import qualified Data.ByteString.Lazy        as DBL
 import           Data.List                   (sortOn)
 import qualified Data.Map.Strict             as DMS
 import           Data.Maybe                  (fromJust, fromMaybe, listToMaybe)
@@ -28,10 +26,8 @@ import           Graphics.HsExif
 import           Hakyll.Core.Identifier      (Identifier (..), toFilePath)
 import           Hakyll.Core.Item            (Item (..))
 import           Hakyll.Web.Template.Context (Context (..), field, functionField)
-import           Helpers.Metadata            (Metadata (..), readMetadata)
+import           Helpers.Metadata            (Metadata (..), loadMetadata)
 import           System.FilePath             (takeBaseName)
-import           System.IO                   (IOMode (..), withFile)
-import           System.IO.Unsafe            (unsafePerformIO)
 import           Text.RE.TDFA.String
 import           Text.XML.HXT.Core
 
@@ -67,21 +63,13 @@ photoFrameField key =
 
 photoExifField :: String -> Context a
 photoExifField key =
-  functionField key $ \k i ->
-    (\v ->
-       if null v
-         then empty
-         else return v) $
-    (getMetadataValue . head $ k) $ getMetadata i
+  functionField key $ \k (Item i _) ->
+    (getMetadataValue . head $ k) <$> loadMetadata i
 
 exifKeyField :: String -> String -> Context a
 exifKeyField key k =
-  field key $ \i ->
-    (\v ->
-       if null v
-         then empty
-         else return v) $
-    getMetadataValue k $ getMetadata i
+  field key $ \(Item i _) ->
+    getMetadataValue k <$> loadMetadata i
 
 chronological :: [Item a] -> [Item a]
 chronological = sortOn $ getPhotoItemDate . itemIdentifier
@@ -95,12 +83,6 @@ splitPhotoFilename str =
     matches' xs = error $ unwords ["Invalid photo filename:", show xs]
 
 --------------------------------------------------------------------------------
-getMetadata :: Item a -> [Metadata] -- TODO: This re-opens the file?
-getMetadata = unsafePerformIO . parseFileMetadata . toFilePath . itemIdentifier
-  where
-    parseFileMetadata :: FilePath -> IO [Metadata]
-    parseFileMetadata = flip (`withFile` ReadMode) (fmap (readMetadata . DBL.fromStrict) . DBS.hGetContents)
-
 getMetadataValue :: String -> [Metadata] -> String
 getMetadataValue = ((fromMaybe "" . asum) .) . map . getValue
   where
