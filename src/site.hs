@@ -35,7 +35,7 @@ main = hakyllWith config  $ do
         >>= loadAndApplyTemplate "templates/default.html"    rootContext
         >>= cleanIndexUrls
 
-  -- Photographies in a collection
+  -- Photographs in a collection
   match photoPaths $
     compile $ do
       saveMetadata
@@ -84,8 +84,8 @@ main = hakyllWith config  $ do
         >>= cleanIndexUrls
   match "templates/*" $ compile templateBodyCompiler
 
-  -- robots.txt and vercel.json files
-  match ("robots.txt" .||. "vercel.json") $ do
+  -- robots.txt
+  match ("robots.txt") $ do
     route   $ idRoute
     compile $ copyFileCompiler
 
