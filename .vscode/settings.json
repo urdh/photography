@@ -1,5 +1,17 @@
 {
     "haskell.checkProject": false,
     "haskell.cabalFormattingProvider": "none",
-    "haskell.formattingProvider": "stylish-haskell"
+    "haskell.formattingProvider": "stylish-haskell",
+    "spellright.language": [
+        "en-GB-10-1."
+    ],
+    "spellright.documentTypes": [
+        "markdown",
+        "plaintext",
+        "haskell"
+    ],
+    "cSpell.words": [
+        "hakyll",
+        "pandoc"
+    ]
 }

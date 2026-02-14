@@ -16,7 +16,7 @@ import           Control.Monad               (ap)
 import qualified Data.ByteString.Char8       as DBC
 import           Data.List                   (sortOn)
 import qualified Data.Map.Strict             as DMS
-import           Data.Maybe                  (fromJust, fromMaybe, listToMaybe)
+import           Data.Maybe                  (fromJust, listToMaybe)
 import qualified Data.Text                   as T
 import           Data.Text.Encoding          (decodeUtf8)
 import           Data.Text.Normalize
@@ -64,12 +64,12 @@ photoFrameField key =
 photoExifField :: String -> Context a
 photoExifField key =
   functionField key $ \k (Item i _) ->
-    (getMetadataValue . head $ k) <$> loadMetadata i
+    loadMetadata i >>= maybe empty return . (getMetadataValue . head $ k)
 
 exifKeyField :: String -> String -> Context a
 exifKeyField key k =
-  field key $ \(Item i _) ->
-    getMetadataValue k <$> loadMetadata i
+  field key $ \(Item i _) -> do
+    loadMetadata i >>= maybe empty return . getMetadataValue k
 
 chronological :: [Item a] -> [Item a]
 chronological = sortOn $ getPhotoItemDate . itemIdentifier
@@ -83,8 +83,8 @@ splitPhotoFilename str =
     matches' xs = error $ unwords ["Invalid photo filename:", show xs]
 
 --------------------------------------------------------------------------------
-getMetadataValue :: String -> [Metadata] -> String
-getMetadataValue = ((fromMaybe "" . asum) .) . map . getValue
+getMetadataValue :: String -> [Metadata] -> Maybe String
+getMetadataValue = (asum .) . map . getValue
   where
     getValue :: String -> Metadata -> Maybe String
     getValue k (ExifData e) = getExifValue k e
