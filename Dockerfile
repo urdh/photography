@@ -88,4 +88,5 @@ RUN --mount=type=bind,source=provider,target=/workspace/provider \
 FROM joseluisq/static-web-server:2 AS runtime
 
 COPY --from=generator /workspace/_site /var/public
-ENTRYPOINT ["/static-web-server", "--root=/var/public", "--health"]
+ENTRYPOINT ["/static-web-server", "--root=/var/public", "--health", \
+    "--cors-allow-origins", "https://sigurdhsson.org"]
