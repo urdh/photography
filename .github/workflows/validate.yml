@@ -24,6 +24,6 @@ jobs:
         with:
           context: .
           push: false
-          cache-from: type=registry,ref=ghcr.io/${{ github.repository }}/site:cache
-          cache-to: type=registry,ref=ghcr.io/${{ github.repository }}/site:cache,mode=max
+          cache-from: type=registry,ref=ghcr.io/${{ github.repository }}:cache
+          cache-to: type=registry,ref=ghcr.io/${{ github.repository }}:cache,mode=max
           target: builder
