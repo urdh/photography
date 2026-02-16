@@ -9,6 +9,9 @@ jobs:
   build:
     runs-on: ubuntu-latest
     name: Build containers
+    env:
+      DOCKER_CACHE: type=registry,ref=ghcr.io/${{ github.repository }}:cache
+      PUSH_CACHE: ${{ github.actor != 'dependabot[bot]' }}
     steps:
       - uses: actions/checkout@v6
         with:
@@ -24,6 +27,6 @@ jobs:
         with:
           context: .
           push: false
-          cache-from: type=registry,ref=ghcr.io/${{ github.repository }}:cache
-          cache-to: type=registry,ref=ghcr.io/${{ github.repository }}:cache,mode=max
+          cache-from: ${{ env.DOCKER_CACHE }}
+          cache-to: ${{ env.PUSH_CACHE == 'true' && format('{0},mode=max', env.DOCKER_CACHE) || '' }}
           target: builder
