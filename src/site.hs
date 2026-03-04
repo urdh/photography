@@ -3,7 +3,8 @@
 import           Data.List        (isSuffixOf)
 import           Hakyll
 import           Hakyll.Images    (ensureFitCompiler, loadImage, compressJpgCompiler)
-import           Helpers.Contexts (archiveContext, collectionContext, photoContext)
+import           Helpers.Contexts (archiveContext, categoryContext, collectionContext, photoContext,
+                                   getCategoryOrEmpty)
 import           Helpers.Metadata (saveMetadata)
 
 --------------------------------------------------------------------------------
@@ -22,9 +23,20 @@ photoPaths = fromRegex $ "collections/.+/" ++ extensions
 indexPaths :: Pattern
 indexPaths = fromRegex "collections/.+/index\\.[a-z]+"
 
+categoryPaths :: Pattern
+categoryPaths = fromGlob "categories/*"
+
 --------------------------------------------------------------------------------
 main :: IO ()
 main = hakyllWith config  $ do
+  -- Categories
+  tags <- buildTagsWith getCategoryOrEmpty indexPaths (fromCapture categoryPaths)
+  tagsRules tags $ \tag _ -> do
+      compile $ do
+        makeItem tag
+          >>= applyAsTemplate categoryContext'
+          >>= cleanIndexUrls
+
   -- Collections
   match "collections/*/index.*" $ do
     route   $ setExtension "html"
@@ -117,8 +129,11 @@ photoContext' = photoContext rootContext indexPaths extensions
 collectionContext' :: Context String
 collectionContext' = collectionContext rootContext indexPaths extensions
 
+categoryContext' :: Context String
+categoryContext' = categoryContext rootContext indexPaths extensions
+
 archiveContext' :: Context String
-archiveContext' = archiveContext rootContext indexPaths photoPaths extensions
+archiveContext' = archiveContext rootContext categoryPaths indexPaths photoPaths extensions
 
 rootContext :: Context String
 rootContext =

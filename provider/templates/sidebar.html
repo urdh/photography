@@ -4,8 +4,10 @@
         <h1><a href="/">photos</a> by urdh</h1>
         <nav id="collections" aria-label="Photo collections">
           <ul>
-            $-for(collections)$
-            <li><a href="$url$">$title$</a></li>
+            $-for(categories)$
+              $-for(collections)$
+              <li><a href="$url$">$title$</a></li>
+              $-endfor$
             $-endfor$
           </ul>
         </nav>
