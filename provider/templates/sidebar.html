@@ -3,13 +3,16 @@
       <header>
         <h1><a href="/">photos</a> by urdh</h1>
         <nav id="collections" aria-label="Photo collections">
-          <ul>
-            $-for(categories)$
-              $-for(collections)$
+          $-for(categories)$
+            $-if(category)$
+            <h2>$category$</h2>
+            $-endif$
+            <ul>
+            $-for(collections)$
               <li><a href="$url$">$title$</a></li>
-              $-endfor$
             $-endfor$
-          </ul>
+            </ul>
+          $-endfor$
         </nav>
       </header>
       <footer>
