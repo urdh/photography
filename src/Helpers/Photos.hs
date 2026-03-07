@@ -14,7 +14,7 @@ module Helpers.Photos
 import           Control.Applicative         (Alternative (..), (<|>), asum)
 import           Control.Monad               (ap)
 import qualified Data.ByteString.Char8       as DBC
-import           Data.List                   (sortOn)
+import           Data.List                   (intercalate, sortOn)
 import qualified Data.Map.Strict             as DMS
 import           Data.Maybe                  (fromJust, listToMaybe)
 import qualified Data.Text                   as T
@@ -98,11 +98,17 @@ getXmpValue = (. T.unpack) . getValue
     getValue "copyright" = listToMaybe . findXmpValue "dc:rights"
     getValue "license"   = listToMaybe . findXmpValue "cc:license"
     getValue "title"     = listToMaybe . findXmpValue "dc:description"
+    getValue "location"  = fmap (intercalate ", ") <$>
+                            findXmpValues ["photoshop:City", "photoshop:Country"]
     getValue _           = const Nothing
     -- Get all values of the given attribute from the input XML (TODO: too lenient!)
+    findXmpValues :: [String] -> String -> Maybe [String]
+    findXmpValues = flip (mapM . (listToMaybe .) . flip findXmpValue)
     findXmpValue :: String -> String -> [String]
     findXmpValue key = runLA (xreadDoc >>> multi (
                            (isElem >>> getAttrValue0 key) <+>
+                           (isElem >>> hasName key /> isText
+                             `notContaining` isWhiteSpace >>> getText) <+>
                            (isElem >>> hasName key >>> getAttrValue0 "rdf:resource") <+>
                            (isElem >>> hasName key /> (hasName "rdf:Seq" <+> hasName "rdf:Alt")
                              /> hasName "rdf:li" /> isText >>> getText)
@@ -138,7 +144,6 @@ getExifValue = getValue
                             [findKey fnumber, findKey apertureValue]
     getValue "speed"     = fmap (prettify id) . findKey isoSpeedRatings
     getValue "copyright" = fmap (prettify fixEncoding) . findKey copyright
-    getValue "location"  = const Nothing -- TODO: read EXIF tag and do GPS lookup
     getValue "title"     = fmap (prettify fixEncoding) . findKey imageDescription
     getValue _           = const Nothing
     -- Pretty-print an ExifValue given the ExifTag it belongs to
