@@ -27,6 +27,15 @@
         $-endif$
       $-endif$
       $if(exif("speed"))$<span class="iso">(ISO $exif("speed")$)</span>$endif$
+      <span class="location">
+        $if(exif("location"))$
+          $-if(exif("map-param"))$
+            <a href="https://www.openstreetmap.org/search?$exif("map-param")$">$exif("location")$</a>
+          $else$
+            $exif("location")$
+          $-endif$
+        $endif$
+      </span>
     </p>
     <p class="license" property="dc:rights" content="$exif("copyright")$">
       $-if(exif("license"))$

@@ -28,6 +28,7 @@ import           Hakyll.Core.Item            (Item (..))
 import           Hakyll.Web.Template.Context (Context (..), field, functionField)
 import           Helpers.Metadata            (Metadata (..), loadMetadata)
 import           System.FilePath             (takeBaseName)
+import           Text.Printf
 import           Text.RE.TDFA.String
 import           Text.XML.HXT.Core
 
@@ -144,6 +145,8 @@ getExifValue = getValue
                             [findKey fnumber, findKey apertureValue]
     getValue "speed"     = fmap (prettify id) . findKey isoSpeedRatings
     getValue "copyright" = fmap (prettify fixEncoding) . findKey copyright
+    getValue "map-param" = fmap (uncurry (printf "lat=%.4f&lon=%.4f&zoom=15")) .
+                            getGpsLatitudeLongitude
     getValue "title"     = fmap (prettify fixEncoding) . findKey imageDescription
     getValue _           = const Nothing
     -- Pretty-print an ExifValue given the ExifTag it belongs to
