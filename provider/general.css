@@ -268,6 +268,9 @@ main>header h1:after {
 .metadata span+span {
   margin-left: 1em;
 }
+.metadata .location {
+  white-space: nowrap;
+}
 } /* media all and (max-width: 1059px) */
 /* Colors */
 html {
