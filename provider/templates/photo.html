@@ -11,7 +11,7 @@
   </h2>
   <div class="metadata">
     <p>
-      <span class="camera">$exif("camera")$$if(exif("lens"))$ + $exif("lens")$$endif$</span>
+      <span class="camera">$exif("camera")$</span>$if(exif("lens"))$ + <span class="lens">$exif("lens")$</span>$endif$
     </p>
     <p>
       $if(exif("filmtype"))-$
