@@ -90,7 +90,6 @@ p {
 .sidebar {
   position: fixed;
   top: 50px;
-  height: 150px;
   width: 100%;
   padding: 10px 7.5%;
   z-index: 1;
@@ -214,7 +213,7 @@ main>header h1 {
   font-size:		0.7072em;		/* base - 1 stop */
   line-height:	2.121;
 }
-.metadata span+span {
+.metadata span+span:not(.lens) {
   margin-left: 1em;
 }
 } /* media all and (min-width: 1060px) */
@@ -265,9 +264,10 @@ main>header h1:after {
   margin: 0;
   text-align: center;
 }
-.metadata span+span {
+.metadata span+span:not(.lens) {
   margin-left: 1em;
 }
+.metadata .lens,
 .metadata .location {
   white-space: nowrap;
 }
